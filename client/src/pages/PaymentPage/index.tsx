@@ -86,6 +86,7 @@ const PaymentPage = () => {
     return () => clearInterval(interval);
   }, [ countdown]);
 
+
   return (
     <div className="w-[100vh] h-[65vh] PaymentPage_container">
       

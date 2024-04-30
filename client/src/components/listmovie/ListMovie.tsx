@@ -76,6 +76,7 @@ const ListMovie = () => {
               defaultActiveKey="2"
               onChange={isLoading === false ? onChange : onChange}
               size="large"
+              style={{ textTransform: 'uppercase', fontWeight: 'bold' }}
             />
           </div>
           <div className="product__movies">

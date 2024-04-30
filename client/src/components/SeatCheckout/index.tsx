@@ -40,6 +40,7 @@ const SeatCheckout = ({ showtime, isLoading, user }: Props) => {
   const storedCounting = localStorage.getItem("counting") === "true" || false;
 
   const [countdown, setCountdown] = useState(storedCountdown);
+  const [seatChoose, setSeatChoose] = useState();
   const [counting, setCounting] = useState(storedCounting);
 
   useEffect(() => {
@@ -121,23 +122,24 @@ const SeatCheckout = ({ showtime, isLoading, user }: Props) => {
         }
       }
     }
-    if (seat.status === "unbook") {
+    if (seat.status == "unbook") {
       updateSeatStatus({ id: seat.id, status: "booking", user_id: user?.id });
-      dispacth(setSeatsToggle(seat));
-    } else if (seat.status === "booking") {
+      dispacth(setSeatsToggle(seat))
+    } else if (seat.status == "booking") {
       updateSeatStatus({ id: seat.id, status: "unbook", user_id: null });
-      dispacth(setSeatsToggle(seat));
+      dispacth(setSeatsToggle(seat))
     }
   };
+  
   const groupedSeats = seatDatas.reduce((acc, seatData) => {
     const seatTypeId = seatData.seat_type_id;
-
+    
     if (!acc[seatTypeId]) {
       acc[seatTypeId] = [seatData];
     } else {
       acc[seatTypeId].push(seatData);
     }
-
+    
     return acc;
   }, {});
   const groupedSeatsArray = Object.values(groupedSeats);
@@ -235,9 +237,6 @@ const SeatCheckout = ({ showtime, isLoading, user }: Props) => {
             )}
           </div>
           ))}
-          
-          
-          
         </div>
       </div>
       <div className="md:grid grid-cols-4 gap-2 mt-20 mb-10 p-4 bg-white">

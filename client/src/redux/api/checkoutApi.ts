@@ -29,6 +29,14 @@ const checkoutApi = createApi({
             query: () => `/bookings`,
             providesTags: ["Checkout"],
         }),
+        getAllSeatBooking: build.query({
+            query: ({ status, user_id }) => ({
+                url: `seat-booking`,
+                method: "GET",
+                params: { status, user_id },
+            }),
+            providesTags: ["Checkout"],
+        }),
         getBookingById: build.query({
             query: (id) => `/bookings/${id}`,
             providesTags: ["Checkout"],
@@ -92,6 +100,7 @@ export const {
     useGetSeatsByShowTimeQuery,
     useCheckoutBookingMutation,
     useGetAllBookingsQuery,
+    useGetAllSeatBookingQuery,
     useUpdateSeatStatusMutation,
     useUpdateNotYetMutation,
     useUpdateSatisfiedMutation,

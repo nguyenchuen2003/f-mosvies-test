@@ -1,5 +1,5 @@
 import { Link, Outlet } from "react-router-dom";
-import logo from "../../public/img/logo.png";
+import logo from "../../public/img/logo-1.png";
 import { useAppDispatch, useAppSelector } from "../store/hook";
 import { Dropdown, MenuProps, Popconfirm } from "antd";
 import {

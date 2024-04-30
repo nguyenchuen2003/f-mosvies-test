@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import logo from "../../public/img/logo.png";
+import logo from "../../public/img/logo-1.png";
 import { Link, Outlet } from "react-router-dom";
 import {
   AppstoreOutlined,
