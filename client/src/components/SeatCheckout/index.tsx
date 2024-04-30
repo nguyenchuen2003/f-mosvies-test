@@ -40,7 +40,7 @@ const SeatCheckout = ({ showtime, isLoading, user }: Props) => {
   const storedCounting = localStorage.getItem("counting") === "true" || false;
 
   const [countdown, setCountdown] = useState(storedCountdown);
-  const [seatChoose, setSeatChoose] = useState();
+  const [seatChoose, setSeatChoose] = useState([]);
   const [counting, setCounting] = useState(storedCounting);
 
   useEffect(() => {
@@ -81,9 +81,11 @@ const SeatCheckout = ({ showtime, isLoading, user }: Props) => {
   });
 
   const handleClick = (seat: any) => {
+    
     if (!counting) {
       setCounting(true);
     }
+
     const selectedSeats = seatDatas.filter(
       (item) => item.status === "booking" && item.user_id === user.id
     );
@@ -122,27 +124,36 @@ const SeatCheckout = ({ showtime, isLoading, user }: Props) => {
         }
       }
     }
-    if (seat.status == "unbook") {
+    if (seat.status === "unbook") {
+      const seatIndex = seatChoose.findIndex((chosenSeat) => chosenSeat.id === seat.id);
+  
+      if (seatIndex !== -1) {
+        const updatedSeatChoose = [...seatChoose];
+        updatedSeatChoose.splice(seatIndex, 1);
+        setSeatChoose(updatedSeatChoose);
+      } else {
+        setSeatChoose([...seatChoose, seat]);
+      }
       updateSeatStatus({ id: seat.id, status: "booking", user_id: user?.id });
       dispacth(setSeatsToggle(seat))
-    } else if (seat.status == "booking") {
+    } else if (seat.status === "booking") {
       updateSeatStatus({ id: seat.id, status: "unbook", user_id: null });
       dispacth(setSeatsToggle(seat))
     }
   };
-  
   const groupedSeats = seatDatas.reduce((acc, seatData) => {
     const seatTypeId = seatData.seat_type_id;
-    
+
     if (!acc[seatTypeId]) {
       acc[seatTypeId] = [seatData];
     } else {
       acc[seatTypeId].push(seatData);
     }
-    
+
     return acc;
   }, {});
   const groupedSeatsArray = Object.values(groupedSeats);
+  
   return (
     <div className="w-full">
       <div className="m-4">
@@ -219,14 +230,15 @@ const SeatCheckout = ({ showtime, isLoading, user }: Props) => {
                   <img
                   style={{
                     filter:
-                      seat?.status == "booking" && user?.id == seat?.user_id
-                        ? "invert(23%) sepia(35%) saturate(600%) hue-rotate(160deg) brightness(94%) contrast(103%)"
-                        : seat.status == "booking" &&
-                          user.id !== seat?.user_id
-                        ? "invert(67%) sepia(23%) saturate(7265%) hue-rotate(179deg) brightness(108%) contrast(95%)"
-                        : seat.status == "booked"
+                      seatChoose.some((chosenSeat) => chosenSeat.id === seat.id)
+                        ? "invert(100%) sepia(35%) saturate(600%) hue-rotate(160deg) brightness(94%) contrast(103%)"
+                        : seat?.status === "booking"
+                        ? user?.id === seat?.user_id
+                          ? "invert(23%) sepia(35%) saturate(600%) hue-rotate(160deg) brightness(94%) contrast(103%)"
+                          : "invert(67%) sepia(23%) saturate(7265%) hue-rotate(179deg) brightness(108%) contrast(95%)"
+                        : seat?.status === "booked"
                         ? "invert(45%) sepia(100%) saturate(6342%) hue-rotate(359deg) brightness(99%) contrast(110%)"
-                        : "",
+                        : ""
                   }}
                     className={`w-full`}
                     src={seat?.seat_type?.image}
@@ -237,6 +249,9 @@ const SeatCheckout = ({ showtime, isLoading, user }: Props) => {
             )}
           </div>
           ))}
+          
+          
+          
         </div>
       </div>
       <div className="md:grid grid-cols-4 gap-2 mt-20 mb-10 p-4 bg-white">
@@ -253,9 +268,9 @@ const SeatCheckout = ({ showtime, isLoading, user }: Props) => {
           <img className="w-14 h-10 object-center" src={imgDouble} alt="" />
           <p>Ghế đôi</p>
         </div>
-        <div className="flex justify-end gap-1 mt-2 text-xl">
-          <p className="text-2xl font-bold mt-2">Tổng tiền:</p>
-          <p className="text-2xl font-bold mt-2">
+        <div className="flex gap-1 mt-2">
+          <p className="text-1xl font-bold mt-2">Tổng tiền:</p>
+          <p className="text-1xl font-bold mt-2">
             {formatCurrency(
               stateProducts.reduce((sum: any, item: any) => {
                 return sum + item.price * item.quantity;

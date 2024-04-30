@@ -119,7 +119,7 @@ const MoviePage = () => {
           <div className="md:max-w-[1150px] max-w-xs mx-auto my-10" key={index}>
             <div className="grid grid-cols-2 md:grid-cols-3">
               <div
-                className="relative md:w-[310px] w-[130px] group"
+                className="relative md:w-[370px] group"
                 onClick={() => showModalTrailer(movie)}
               >
                 <img src={movie?.image} alt="" className="rounded-xl" />
@@ -133,7 +133,7 @@ const MoviePage = () => {
                   className="cursor-pointer"
                   onClick={() => nextDetail(movie)}
                 >
-                  <span className="md:text-4xl text-2xl text-[#03599d]">
+                  <span className="md:text-4xl text-2xl text-black">
                     {movie?.name}
                   </span>
                 </div>
@@ -185,12 +185,12 @@ const MoviePage = () => {
         );
       })}
 
-      <div className="bg-black px-4">
+      <div className="bg-white px-4">
         <div className="max-w-[1150px] mx-auto py-10 overflow-hidden">
-          <h4 className="mx-auto text-white md:text-4xl font-bold border-b-4 border-b-[#03599d] w-fit p-4 ">
-            Phim Sắp Chiếu
+          <h4 className="mx-auto text-black md:text-4xl font-bold border-b-4 border-b-[#03599d] w-fit p-4 ">
+            PHIM SẮP CHIẾU
           </h4>
-          <div className="flex gap-1 md:translate-x-[400px] py-20">
+          <div className="flex gap-1 py-20">
             {movieUpscreing?.data
               ?.filter((item) => item.status == "upcoming")
               ?.map((item) => (

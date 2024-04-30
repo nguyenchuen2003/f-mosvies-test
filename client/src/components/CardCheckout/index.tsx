@@ -45,53 +45,53 @@ const CardCheckout = ({ showtime, user }: Props) => {
           </h1>
         </div>
         <div className="grid grid-cols-2 items-center ml-12  gap-14 mt-8">
-          <p className="flex items-center text-[14px]">
+          <p className="flex items-center text-[16px]">
             <FaTag /> <span>Thể loại</span>
           </p>
-          <p className="font-bold text-[14px]">
+          <p className="font-bold text-[16px]">
             {showtime?.data?.movie?.genres?.map((item) => (
               <span key={item?.id}>{item?.name},</span>
             ))}
           </p>
         </div>
         <div className="grid grid-cols-2 ml-12 items-center  gap-14 mt-6">
-          <p className="flex items-center text-[14px]">
+          <p className="flex items-center text-[16px]">
             <FaHistory /> <span>Thời lượng</span>
           </p>
-          <p className="font-bold text-[14px]">{showtime?.data?.movie?.duration} phút</p>
+          <p className="font-bold text-[16px]">{showtime?.data?.movie?.duration} phút</p>
         </div>
       </div>
       <div>
         <div className="grid grid-cols-2 items-center ml-12  gap-14 mt-8">
-          <p className="flex items-center text-[14px]">
+          <p className="flex items-center text-[16px]">
             <FaCalendarDays /> <span>Ngày chiếu</span>
           </p>
-          <p className="font-bold text-[14px]">
+          <p className="font-bold text-[16px]">
             {dayjs(showtime?.data?.show_date).format("DD-MM")}
           </p>
         </div>
 
         <div className="grid grid-cols-2 items-center ml-12  gap-14 mt-8">
-          <p className="flex items-center text-[14px]">
+          <p className="flex items-center text-[16px]">
             <FaHistory /> <span>Giờ chiếu</span>
           </p>
-          <p className="font-bold text-[14px]">{showtime?.data?.start_time}</p>
+          <p className="font-bold text-[16px]">{showtime?.data?.start_time}</p>
         </div>
         <div className="grid grid-cols-2 items-center ml-12  gap-14 mt-8">
-          <p className="flex items-center text-[14px]">
+          <p className="flex items-center text-[16px]">
             <FaDesktop /> <span>Phòng chiếu</span>
           </p>
-          <p className="font-bold text-[14px]">
+          <p className="font-bold text-[16px]">
             {showtime?.data?.room?.room_name}
           </p>
         </div>
         <div
           className="grid grid-cols-2 items-center ml-12  gap-14 mt-8 "
         >
-          <p className="flex items-center text-[14px] ">
+          <p className="flex items-center text-[16px] ">
             <FaDesktop /> <span>Ghế ngồi</span>
           </p>
-          <p className="flex flex-wrap font-bold text-[14px]">
+          <p className="flex flex-wrap font-bold text-[16px]">
             {showtime?.data?.seats?.filter((item: any) => item?.status == 'booking' && item?.user_id == user?.id).map((item: any) => <span key={item?.id}>
               {item?.seat_name},
             </span>)}
