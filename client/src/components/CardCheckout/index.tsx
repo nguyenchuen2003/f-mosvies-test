@@ -17,11 +17,13 @@ const CardCheckout = ({ showtime, user }: Props) => {
   const { products: stateProducts } = useAppSelector((state: any) => state.ValueCheckout);
   const [product, setProduct] = useState()
   const dispatch = useAppDispatch()
-
+  
   useEffect(() => {
     const resultProduct = stateProducts?.map((item) => {
       return {
         id: item?.id,
+        name: item?.name,
+        description: item?.description,
         quantity: item?.quantity
       }
     })
@@ -32,8 +34,6 @@ const CardCheckout = ({ showtime, user }: Props) => {
   const booking = (value) => {
     dispatch(setBooking(value))
   }
-
-
 
   return (
     <div>

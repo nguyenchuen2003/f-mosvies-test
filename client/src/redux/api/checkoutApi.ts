@@ -46,9 +46,17 @@ const checkoutApi = createApi({
         }),
         updateSeatStatus: build.mutation({
             query: (seat) => ({
-                url: `seat-reservation/${seat.id}`,
+                url: `seat-reservation`,
                 method: "POST",
-                body: { status: seat.status, user_id: seat.user_id },
+                body: seat,
+            }),
+            invalidatesTags: ["Checkout"],
+        }),
+        updateSeatBooked: build.mutation({
+            query: (seat) => ({
+                url: `seat-booked`,
+                method: "POST",
+                body: seat,
             }),
             invalidatesTags: ["Checkout"],
         }),
@@ -102,6 +110,7 @@ export const {
     useGetAllBookingsQuery,
     useGetAllSeatBookingQuery,
     useUpdateSeatStatusMutation,
+    useUpdateSeatBookedMutation,
     useUpdateNotYetMutation,
     useUpdateSatisfiedMutation,
     useGetBookingByIdQuery,

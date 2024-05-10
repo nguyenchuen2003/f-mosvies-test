@@ -36,6 +36,7 @@ const SeatCheckout = ({ showtime, isLoading, user }: Props) => {
   const dispacth = useAppDispatch();
   const navigate = useNavigate();
   const [seatDatas, setSeatDatas] = useState(showtime?.data?.seats || []);
+  
   const storedCountdown = parseInt(localStorage.getItem("countdown")) || 480;
   const storedCounting = localStorage.getItem("counting") === "true" || false;
 
@@ -65,22 +66,22 @@ const SeatCheckout = ({ showtime, isLoading, user }: Props) => {
   }, [counting, countdown]);
 
   useEffect(() => {
-    const channel = window.Echo.channel("seat-reservation");
-    const handleReservedEvent = (e) => {
-      const updatedSeat = e.seat;
-      setSeatDatas((prevSeatData: any) => {
-        return prevSeatData?.map((seat: any) =>
-          seat.id === updatedSeat.id ? updatedSeat : seat
-        );
-      });
-    };
-    channel.listen(".seat.reserved", handleReservedEvent);
+    // const channel = window.Echo.channel("seat-reservation");
+    // const handleReservedEvent = (e) => {
+    //   const updatedSeat = e.seat;
+    //   setSeatDatas((prevSeatData: any) => {
+    //     return prevSeatData?.map((seat: any) =>
+    //       seat.id === updatedSeat.id ? updatedSeat : seat
+    //     );
+    //   });
+    // };
+    // channel.listen(".seat.reserved", handleReservedEvent);
     if (showtime?.data?.seats && !seatDatas.length) {
       setSeatDatas(showtime?.data?.seats);
     }
-  });
+  }, [showtime]);
 
-  const handleClick = (seat: any) => {
+  const handleClick = async (seat: any) => {
     
     if (!counting) {
       setCounting(true);
@@ -125,20 +126,16 @@ const SeatCheckout = ({ showtime, isLoading, user }: Props) => {
       }
     }
     if (seat.status === "unbook") {
-      const seatIndex = seatChoose.findIndex((chosenSeat) => chosenSeat.id === seat.id);
-  
-      if (seatIndex !== -1) {
-        const updatedSeatChoose = [...seatChoose];
-        updatedSeatChoose.splice(seatIndex, 1);
-        setSeatChoose(updatedSeatChoose);
-      } else {
-        setSeatChoose([...seatChoose, seat]);
+      let test = await updateSeatStatus({ id: seat.id, status: "booking", user_id: user?.id });
+      if(test?.data?.status == 200){
+        window.location.reload();
       }
-      updateSeatStatus({ id: seat.id, status: "booking", user_id: user?.id });
-      dispacth(setSeatsToggle(seat))
+      
     } else if (seat.status === "booking") {
-      updateSeatStatus({ id: seat.id, status: "unbook", user_id: null });
-      dispacth(setSeatsToggle(seat))
+      let test = await updateSeatStatus({ id: seat.id, status: "unbook", user_id: null });
+      if(test?.data?.status == 200){
+        window.location.reload();
+      }
     }
   };
   const groupedSeats = seatDatas.reduce((acc, seatData) => {
@@ -153,7 +150,7 @@ const SeatCheckout = ({ showtime, isLoading, user }: Props) => {
     return acc;
   }, {});
   const groupedSeatsArray = Object.values(groupedSeats);
-  
+
   return (
     <div className="w-full">
       <div className="m-4">
@@ -193,10 +190,10 @@ const SeatCheckout = ({ showtime, isLoading, user }: Props) => {
           <img className="w-8" src={imgNormal} alt="" />
           <p>Ghế trống</p>
         </div>
-        <div className="flex items-center gap-2">
+        {/* <div className="flex items-center gap-2">
           <img className="w-8" src={imgNormalActive} alt="" />
           <p>Ghế đang chọn</p>
-        </div>
+        </div> */}
         <div className="flex items-center gap-2">
           <img className="w-8" src={imgNormalGiu} alt="" />
           <p>Ghế đang giữ</p>
@@ -228,17 +225,13 @@ const SeatCheckout = ({ showtime, isLoading, user }: Props) => {
                     {seat?.seat_name}
                   </p>
                   <img
-                  style={{
+                   style={{
                     filter:
-                      seatChoose.some((chosenSeat) => chosenSeat.id === seat.id)
-                        ? "invert(100%) sepia(35%) saturate(600%) hue-rotate(160deg) brightness(94%) contrast(103%)"
-                        : seat?.status === "booking"
-                        ? user?.id === seat?.user_id
-                          ? "invert(23%) sepia(35%) saturate(600%) hue-rotate(160deg) brightness(94%) contrast(103%)"
-                          : "invert(67%) sepia(23%) saturate(7265%) hue-rotate(179deg) brightness(108%) contrast(95%)"
-                        : seat?.status === "booked"
+                        seat.status == "booking"
+                        ? "invert(67%) sepia(23%) saturate(7265%) hue-rotate(179deg) brightness(108%) contrast(95%)"
+                        : seat.status == "booked"
                         ? "invert(45%) sepia(100%) saturate(6342%) hue-rotate(359deg) brightness(99%) contrast(110%)"
-                        : ""
+                        : "",
                   }}
                     className={`w-full`}
                     src={seat?.seat_type?.image}

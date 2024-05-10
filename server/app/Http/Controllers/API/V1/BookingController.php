@@ -90,37 +90,36 @@ class BookingController extends Controller
                 'coupon_code' => $request->coupon_code
             ]);
 
-            if ($request->coupon_code) {
+            // if ($request->coupon_code) {
 
-                $coupon = Coupon::query()->where('coupon_code', $request->coupon_code)->first();
+            //     $coupon = Coupon::query()->where('coupon_code', $request->coupon_code)->first();
 
-                $coupon_user = CouponBooking::create([
-                    'coupon_id' => $coupon->id,
-                    'user_id' => $request->user_id,
-                ]);
-                // Trừ 1 số lượng mã giảm giá
-                $coupon->quantity = $coupon->quantity - 1;
-                $coupon->save();
-            }
+            //     $coupon_user = CouponBooking::create([
+            //         'coupon_id' => $coupon->id,
+            //         'user_id' => $request->user_id,
+            //     ]);
+            //     // Trừ 1 số lượng mã giảm giá
+            //     $coupon->quantity = $coupon->quantity - 1;
+            //     $coupon->save();
+            // }
 
 
-            foreach ($request->products as $product) {
-                $booking->products()->attach($product['id'], ['quantity' => $product['quantity']]);
-            }
+            // foreach ($request->products as $product) {
+            //     $booking->products()->attach($product['id'], ['quantity' => $product['quantity']]);
+            // }
+
 
             // Update trạng thái ghế
-            foreach ($request->seats as $seat) {
-                $seatModel = Seat::query()->find($seat['id']);
-
-                $seatModel->update([
-                    'status' => Seat::BOOKED,
-                    'booking_id' => $booking->id,
-                    'user_id' => $request->user_id
-                ]);
-                event(new SeatReservation($seatModel));
+            foreach ($request->seats as $seatId) {
+                $seat = Seat::find($seatId); // Fetch the Seat object
+                if ($seat) {
+                    $seat->status = 'booked';
+                    $seat->user_id = $request->user_id;
+                    $seat->booking_id = $booking->id;
+                    $seat->save();
+                }
             }
-
-            Mail::to($booking->user->email)->send(new BookingInformationMail($booking));
+            // Mail::to($booking->user->email)->send(new BookingInformationMail($booking));
 
             return response()->json([
                 'data' => $booking,
@@ -140,30 +139,83 @@ class BookingController extends Controller
         return $this->paymentService->createVNPayPayment($request);
     }
 
-    public function updateSeatReservation(Request $request, string $id)
+    public function updateSeatReservation(Request $request)
     {
-        try {
-            $seat = Seat::query()->find($id);
+        // try {
+        //     $seat = Seat::find($request->id);
 
-            $seat->update([
-                'status' => $request->status,
-                'user_id' => $request->user_id
-            ]);
-
-
-            event(new SeatReservation($seat));
+        //     $seat->update([
+        //         'status' => $request->status,
+        //         'user_id' => $request->user_id
+        //     ]);
 
 
-            return response()->json([
-                'message' => 'Đã cập nhật thành công'
-            ], Response::HTTP_OK);
-        } catch (Exception $exception) {
-            Log::error('BookingController@updateSeatReservation: ', [$exception->getMessage()]);
+        //     event(new SeatReservation($seat));
 
-            return response()->json([
-                'message' => 'Đã có lỗi nghiêm trọng xảy ra'
-            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+
+        //     return response()->json([
+        //         'message' => 'Đã cập nhật thành công'
+        //     ], Response::HTTP_OK);
+        // } catch (Exception $exception) {
+        //     Log::error('BookingController@updateSeatReservation: ', [$exception->getMessage()]);
+
+        //     return response()->json([
+        //         'message' => 'Đã có lỗi nghiêm trọng xảy ra'
+        //     ], Response::HTTP_INTERNAL_SERVER_ERROR);
+        // }
+        $id_seat = $request->input('id');
+
+        if (!is_array($id_seat)) {
+            $id_seat = [$id_seat];
         }
+
+        foreach ($id_seat as $seatId) {
+            $seat = Seat::find($seatId);
+            $seat->status = $request->input('status');
+            $seat->user_id = $request->input('user_id');
+            $seat->save();
+        }
+
+        return response()->json([
+            'status' => 200,
+            'message' => 'Cập nhật trạng thái thành công',
+
+        ], 200);
+    }
+
+    public function updateSeatBooked(Request $request)
+    {
+
+        $id_seat = $request->input('id_seat');
+
+        if (!is_array($id_seat)) {
+            $id_seat = [$id_seat];
+        }
+
+        foreach ($id_seat as $seatId) {
+            $seat = Seat::find($seatId);
+            $seat->status = "booked";
+            $seat->user_id = $request->input('user_id');
+            $seat->save();
+        }
+
+        return response()->json([
+            'status' => 200,
+            'message' => 'Cập nhật trạng thái thành công',
+
+        ], 200);
+    }
+
+    public function seatBooking(Request $request)
+    {
+        $user_id = $request->input('user_id');
+
+        // Lấy danh sách ghế ngồi dựa trên điều kiện
+        $seats = Seat::where('status', 'booking')
+            ->where('user_id', $user_id)
+            ->get();
+
+        return response()->json($seats);
     }
 
     // Chuyển đổi trạng thái đơn hàng từ chưa NOT_YET => SATISFIED

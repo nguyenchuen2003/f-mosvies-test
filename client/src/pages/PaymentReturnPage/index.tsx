@@ -26,11 +26,17 @@ const PayementReturnPage = () => {
   const vnpAmount = queryParams.get("vnp_Amount");
   const vnpTransactionStatus = queryParams.get("vnp_TransactionStatus");
   const vnpTxnRef: number = queryParams.get("vnp_TxnRef");
+  console.log(booking);
+  
   useEffect(() => {
     addBooking({
-      ...booking.payload,
+      // ...booking.payload,
+      user_id: booking?.payload.user_id,
       booking_id: vnpTxnRef,
+      showtime_id: booking?.payload.showtime?.id,
+      total_price: booking?.payload.total_price,
       coupon_code: coupon?.coupon_code,
+      seats: booking?.payload?.seats?.map(seat => seat.id)
     })
       .unwrap()
       .then(() => {

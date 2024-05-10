@@ -261,12 +261,12 @@ const ListsBooking = () => {
             >
               {loadingSatisfied ? <LoadingOutlined /> : "Xuất vé"}
             </button>
-            <button
+            {/* <button
               onClick={() => updateCancel(booking)}
               className="bg-red-500 px-3 py-1 rounded-md text-white"
             >
               {loadingCancel ? <LoadingOutlined /> : "Hủy vé"}
-            </button>
+            </button> */}
           </div>
         ) : status === "satisfied" ? (
           <div className="flex items-center content-center gap-x-3 justify-center">

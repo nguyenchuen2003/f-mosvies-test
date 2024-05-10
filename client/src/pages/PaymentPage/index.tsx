@@ -13,9 +13,11 @@ import { setCoupon } from "../../redux/slices/valueCheckoutSlice";
 import { BiAlarm } from "react-icons/bi";
 import dayjs from "dayjs";
 import IsLoading from "../../utils/IsLoading";
+import { useUpdateSeatStatusMutation } from "../../redux/api/checkoutApi";
 
 const PaymentPage = () => {
   const [paymentBooking, { isLoading }] = usePaymentBookingMutation();
+  const [updateSeatStatus] = useUpdateSeatStatusMutation();
   const { booking, coupon: selectedCoupon } = useAppSelector(
     (state) => state.ValueCheckout
   );
@@ -41,20 +43,27 @@ const PaymentPage = () => {
     "Coupon:",
     coupons
   );
+  
+  const onClickPaymentBooking = async () => {
+    const seatIds = booking?.payload?.seats?.map(seat => seat.id);
+    updateSeatStatus({ id: seatIds, status: "booked", user_id: user?.id });
 
-  const onClickPaymentBooking = () => {
-    paymentBooking({
-      vnp_OrderInfo: "Thanh toan ve xem phim",
-      vnp_OrderType: "190000",
-      vnp_Amount: `${totalAmount}`,
-    })
-      .unwrap()
-      .then((res) => (window.location.href = res.data))
-      .catch((err) => console.log(err));
+
+      paymentBooking({
+        vnp_OrderInfo: "Thanh toan ve xem phim",
+        vnp_OrderType: "190000",
+        vnp_Amount: `${totalAmount}`,
+      })
+        .unwrap()
+        .then(
+          (res) => (window.location.href = res.data)
+        )
+        .catch((err) => console.log(err));
+      
   };
 
   const handleCancel = () => {
-    navigate("/poly-movies");
+    navigate("/poly-checkout/"+booking?.payload?.showtime_id);
   };
 
   const onClickCoupon = (coupon) => {
@@ -85,7 +94,6 @@ const PaymentPage = () => {
 
     return () => clearInterval(interval);
   }, [ countdown]);
-
 
   return (
     <div className="w-[100vh] h-[65vh] PaymentPage_container">
@@ -152,7 +160,7 @@ const PaymentPage = () => {
               <span className="font-semibold mr-2">Combo kèm theo:</span>
               <span className="text-gray-600">
                 {booking?.payload?.products?.map((product) => (
-                  <span key={product?.id}>{product?.name}</span>
+                  <span key={product?.id}>{product?.description} - SL:{product?.quantity}</span>
                 ))}{" "}
               </span>
             </div>

@@ -67,7 +67,10 @@ Route::prefix('v1')->group(function () {
 
     Route::post('vnpay-charge', [BookingController::class, 'createVNPayPayment']);
 
-    Route::post('seat-reservation/{seat_id}', [BookingController::class, 'updateSeatReservation']);
+    Route::post('seat-reservation', [BookingController::class, 'updateSeatReservation']);
+    Route::post('seat-booked', [BookingController::class, 'updateSeatBooked']);
+
+    Route::get('seat-booking', [BookingController::class, 'seatBooking']);
 
     Route::get('showtimes', [MovieController::class, 'getShowtimes']);
 

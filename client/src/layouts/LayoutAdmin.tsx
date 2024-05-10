@@ -108,7 +108,7 @@ const LayoutAdmin: React.FC = () => {
                 label: "Quản lý tài khoản",
                 children:[
                   {key:50,icon: <UserOutlined />, label:<Link to={"acountUser"}>Khách hàng</Link>},
-                  {key:51,icon: <UserOutlined />, label:<Link to={"acountAdmin"}>Quản trị</Link>}
+                  // {key:51,icon: <UserOutlined />, label:<Link to={"acountAdmin"}>Quản trị</Link>}
                 ]
                 
               },
